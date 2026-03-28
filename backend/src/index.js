@@ -61,13 +61,10 @@ if (err) {
 console.log("Error reading temp dir:", err);
 return;
 }
-
-```
   for (const file of files) {
     fs.unlink(path.join(tempDir, file), () => {});
   }
 });
-```
 
 }
 });
