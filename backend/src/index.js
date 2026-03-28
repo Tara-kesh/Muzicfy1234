@@ -23,13 +23,13 @@ dotenv.config();
 const __dirname = path.resolve();
 const app = express();
 
-// ✅ FIXED PORT (important for Render)
+// ✅ FIXED PORT
 const PORT = process.env.PORT || 5000;
 
 const httpServer = createServer(app);
 initializeSocket(httpServer);
 
-// ✅ FIXED CORS (works for both local + production)
+// ✅ FIXED CORS
 app.use(
 cors({
 origin: process.env.FRONTEND_URL || "http://localhost:3000",
@@ -46,13 +46,14 @@ useTempFiles: true,
 tempFileDir: path.join(__dirname, "tmp"),
 createParentPath: true,
 limits: {
-fileSize: 20 * 1024 * 1024, // 20MB max
+fileSize: 20 * 1024 * 1024,
 },
 })
 );
 
-// ✅ CRON JOB (cleanup temp files every hour)
+// ✅ CRON JOB
 const tempDir = path.join(process.cwd(), "tmp");
+
 cron.schedule("0 * * * *", () => {
 if (fs.existsSync(tempDir)) {
 fs.readdir(tempDir, (err, files) => {
@@ -60,10 +61,14 @@ if (err) {
 console.log("Error reading temp dir:", err);
 return;
 }
-for (const file of files) {
-fs.unlink(path.join(tempDir, file), () => {});
-}
+
+```
+  for (const file of files) {
+    fs.unlink(path.join(tempDir, file), () => {});
+  }
 });
+```
+
 }
 });
 
@@ -75,7 +80,7 @@ app.use("/api/songs", songRoutes);
 app.use("/api/albums", albumRoutes);
 app.use("/api/stats", statRoutes);
 
-// ✅ SERVE FRONTEND (production)
+// ✅ SERVE FRONTEND
 if (process.env.NODE_ENV === "production") {
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
